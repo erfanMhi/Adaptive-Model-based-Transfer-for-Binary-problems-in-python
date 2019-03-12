@@ -19,16 +19,20 @@ class ProbabilityModel: # Works reliably for 2(+) Dimensional distributions
         self.modeltype = modeltype
         
     def sample(self, nos):
+        #print('nos,self.vars', nos,self.vars)
+        nos = int(nos)
         if self.modeltype == 'mvarnorm':
             solutions = np.random.multivariate_normal(self.mean_true,self.covarmat_true,size=nos)
         elif self.modeltype == 'umd':
-            solutions = rand(nos,self.vars);
+           
+            solutions = np.random.rand(nos,int(self.vars));
             for i in range(nos):
                 index1 = solutions[i,:] <= self.probofone_true;
                 index0 = solutions[i,:] > self.probofone_true;
                 solutions[i,index1] = 1;
                 solutions[i,index0] = 0;
         return solutions
+
     def pdfeval(self, solutions):
         if self.modeltype == 'mvarnorm':
             mvn = multivariate_normal(self.mean_noisy,self.covarmat_noisy) #create a multivariate Gaussian object with specified mean and covariance matrix
@@ -57,13 +61,13 @@ class ProbabilityModel: # Works reliably for 2(+) Dimensional distributions
             self.covarmat_noisy = np.cov(solutions_noisy);
         elif self.modeltype == 'umd':
             self.probofone_true = np.mean(solutions,0);
-            print(self.probofone_true)
+            #print(self.probofone_true)
             self.probofzero_true = 1 - self.probofone_true;
-            print('probofone_true')
-            print(self.probofzero_true.shape)
+            #print('probofone_true')
+            #print(self.probofzero_true.shape)
             solutions_noisy = np.append(solutions, np.round(np.random.rand(round(0.1*pop),self.vars)),axis=0)
-            print(solutions_noisy.shape)
+            #print(solutions_noisy.shape)
             self.probofone_noisy = np.mean(solutions_noisy, 0);
-            print(self.probofone_noisy)
+            #print(self.probofone_noisy)
             self.probofzero_noisy = 1 - self.probofone_noisy;
-            print(self.probofzero_noisy)
+            #print(self.probofzero_noisy)
