@@ -24,3 +24,37 @@ def fitness_eval(population,problem,dims):
     else:
         raise Exception('Function not implemented.')
     return fitness
+
+def knapsack_fitness_eval(population, problem, dims,pop): # Question about BV[l] changing in matlab in comparison with python
+    fitness = np.zeros(pop);
+    Weights = problem['w'];
+    Profits = problem['p'];
+    Ratios = Profits/Weights;
+    for i in range(pop):
+        BV = population[i, :] == 1;
+        TotalWeight = np.sum(Weights[BV]);
+        TotalProfit = np.sum(Profits[BV]);
+        
+        if TotalWeight > problem['cap']: # Repair solution
+            selections = np.sum(BV)
+            List = np.zeros((selections,2))
+            counter = 0
+            for j in range(dims):
+                if BV[j] == 1:
+                    List[counter,0] = Ratios[j]
+                    List[counter,1] = int(j)
+                    counter = counter + 1
+                
+                if counter >= selections:
+                    break
+            List = List[List[:,0].argsort()[::-1]]
+            counter = selections-1
+            while TotalWeight > problem['cap']:
+                l = int(List[counter,1])
+                BV[l] = 0 
+                TotalWeight = TotalWeight - Weights[l]
+                TotalProfit = TotalProfit - Profits[l]
+                counter = counter - 1
+
+        fitness[i] = TotalProfit
+    return fitness
