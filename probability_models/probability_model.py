@@ -34,6 +34,15 @@ class ProbabilityModel: # Works reliably for 2(+) Dimensional distributions
         return solutions
 
     def pdfeval(self, solutions):
+        """Calculating the probabilty of every solution
+        
+        Arguments:
+            solutions {[2-D Array]} -- [solution or population of evolutionary algorithm]
+        
+        Returns:
+            [1-D Array] -- [probabilty of every solution]
+        """
+
         if self.modeltype == 'mvarnorm':
             mvn = multivariate_normal(self.mean_noisy,self.covarmat_noisy) #create a multivariate Gaussian object with specified mean and covariance matrix
             probofsols = mvn.pdf(solutions)
@@ -70,4 +79,4 @@ class ProbabilityModel: # Works reliably for 2(+) Dimensional distributions
             self.probofone_noisy = np.mean(solutions_noisy, 0);
             #print(self.probofone_noisy)
             self.probofzero_noisy = 1 - self.probofone_noisy;
-            #print(self.probofzero_noisy)
+            #print(self.probofzero_noisy) 

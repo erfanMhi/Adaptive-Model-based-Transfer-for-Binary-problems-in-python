@@ -5,7 +5,7 @@ from utils.tools import Tools
 from utils.fitness_util import *
 from probability_models.probability_model import ProbabilityModel
 from probability_models.mixture_model import MixtureModel
-
+ 
 def BGA(problem, dims, th_best, pop=200, gen=1000, addr="problems/toy_problem"):
     """[bestSol, fitness_hist] = BGA(problem,dims,th_best): simple binary GA with
         uniform crossover and bit-flip mutation. 
@@ -51,7 +51,7 @@ def BGA(problem, dims, th_best, pop=200, gen=1000, addr="problems/toy_problem"):
         population = interpop[:pop,:]
         fitness_hist[i] = fitness[0];
         print('Generation ', str(i), ' best fitness = ',str(fitness_hist[i])) 
- 
+        
         if (fitness[1] >= th_best or i == gen) and buildmodel:
             print('Building probablistic model...')
             model = ProbabilityModel('umd')
@@ -104,6 +104,7 @@ def AMT_BGA(problem, dims, reps, trans, fitness_func='toy_problem', addr="proble
         fitness_hist[rep, 0] = best_fit
         
         for i in range(1,gen):
+            # As we consider all the population as parents, we don't samplt P^{s}
             if transfer and i % TrInt == 0:
                 mmodel = MixtureModel(all_models)
                 mmodel.createtable(population, True, 'umd')

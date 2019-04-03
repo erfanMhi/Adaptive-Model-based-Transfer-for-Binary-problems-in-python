@@ -17,15 +17,23 @@ class MixtureModel: # Works reliably for 2(+) Dimensional distributions
         self.alpha = (1/self.noms)*np.ones(self.noms)
         
     def EMstacking(self):
+        """[Determining the mixture weights of each model]
+        """
+
         iterations = 100
         for i in range(iterations):
-            talpha = self.alpha
+            talpha = deepcopy(self.alpha) #Probability of every model (mixture weights) $\alpha$ in the main paper
             probvector = np.dot(self.probtable, talpha.T)
             for j in range(self.noms):
-                talpha[j] = sum((1/self.nsols)*talpha[j]*self.probtable[:, j]/probvector);
+                # according to this, if model j give a greater probability to each solution of target problem, it is more likely to have a greater alpha
+                talpha[j] = sum((1/self.nsols)*talpha[j]*self.probtable[:, j]/probvector); 
             self.alpha = talpha
     
     def mutate(self):
+        """[Adding noise to mixture weights ($\alpha$) and doing some 
+            mathematical stuff to make the alpha suitable for probability theory axioms]
+        """
+
         #print('modifalpha', self.alpha)
         modifalpha = self.alpha+np.random.normal(0,0.01,self.noms); # Determining std dev for mutation can be a parameteric study
         #print('modifalpha', modifalpha)
@@ -70,7 +78,7 @@ class MixtureModel: # Works reliably for 2(+) Dimensional distributions
             self.alpha = (1/self.noms)*np.ones(self.noms);
             nos = solutions.shape[0];
             self.probtable = np.ones((nos, self.noms));
-            for j in range(self.noms-1):
+            for j in range(self.noms-1): # Calculating of the assigned probability of each source model to target solutions
                 self.probtable[:, j] = self.model_list[j].pdfeval(solutions);
             for i in range(nos): # Leave-one-out cross validation scheme
                 x = np.append(solutions[:i,:], solutions[i+1:,:], 0)
